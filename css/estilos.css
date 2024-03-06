@@ -1,0 +1,208 @@
+/*HEADER*/
+header {
+    background-image: url("../images/bg_header.jpg");
+    background-size: cover;
+}
+#logo {
+    width: 300px;
+}
+/*NAVIGATION*/
+#navegation {
+    padding: 0;
+}
+nav div.container-fluid {
+    padding: 0;
+    background-color: rgba(243, 188, 5, 0.829);
+}
+nav button.btn {
+    color: black;
+    font-weight: bold;
+}
+
+nav .nav-link {
+    color: black;
+    font-weight: bold;
+}
+
+#buttonModal2 {
+    width:180px;
+    height: 50px;
+    background-color: transparent;
+    padding-bottom: 50px;
+    font-weight: bold;
+    border-color: transparent;
+}
+
+.modal-body input:nth-child(2) {
+margin-top: 20px;
+}
+
+#registerA {
+    display: inline-block;
+    margin-top: 30px;
+}
+
+#divLogin {
+    margin-right: 15px;
+    margin-top: 15px;
+}
+
+/*SECTION HERO*/
+
+#hero {
+    width: 100%;
+    min-height: 100vh;
+    background-image: url("../images/bg_hero.jpg");
+    background-size: cover;
+    background-position: top;
+}
+
+#hero h1 {
+    font-size: 30pt;
+    font-weight: bold;
+    color:black;
+}
+
+#hero p {
+    color: white;
+    font-weight: bold;
+}
+
+#hero img {
+    background-color: white;
+}
+
+#start_subasta {
+    background-color: #333;
+    height: 60px;
+    font-weight: bold;
+}
+
+button#cesta.btn {
+    background-color: whitesmoke;
+    border: 1px solid gray;
+}
+
+.bi-cash-coin {
+    font-size: 25px;
+    color: greenyellow;
+    position: relative;
+    top: 15%;
+}
+
+/*INFORMACION SOBRE NUESTROS DATOS*/
+
+#info {
+    background-color:#27AE60FF;
+    padding-bottom: 70px;
+}
+
+#info p {
+    color: white;
+    font-weight: bold;
+    font-size: 20pt;
+    margin-bottom: 0;
+}
+
+#info span {
+    color: rgba(231, 208, 208, 0.76);
+    font-weight: bold;
+}
+
+/*SECCION DE LAS SUBASTAS ACTIVAS*/
+
+#explorar #informacion {
+    margin-top: 100px;
+    margin-bottom: 50px;
+}
+
+#explorar #informacion h2 {
+    color: rgb(77, 5, 5);
+    font-weight: bold;
+}
+
+#explorar #informacion span {
+    color: gray;
+}
+
+#explorar div.card {
+padding-left: 0;
+padding-right: 0;
+}
+
+.card-body {
+    padding-bottom:0;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.card {
+    border: 0;
+    border-bottom: 2px solid rgba(231, 208, 208, 0.7);
+}
+
+#explorar .card-body h6 {
+    color: rgb(77, 5, 5);
+    font-weight: bold;
+}
+
+#explorar .card-body p.tempo {
+    color: gray;
+}
+
+#explorar .card-body p:nth-child(3) {
+    color: darkred;
+    font-weight: bold;
+}
+
+#explorar .card-body p:nth-child(4) {
+    color: gray;
+    font-weight: bold;
+}
+
+#explorar button {
+    background-color: #E76F51FF;
+    color: white;
+    font-weight: bold;
+    border-radius: 0px;
+    height: 40px;
+}
+
+#preguntas h1 {
+    margin-top: 90px;
+    color: rgb(77, 5, 5);
+    font-weight: bold;
+}
+
+#preguntas .col-6 {
+    margin-top: 80px;
+}
+
+#preguntas h6 {
+    color: rgb(77, 5, 5);
+    font-weight: bold;
+}
+
+#preguntas p {
+    color: gray;
+}
+
+.secondH6 {
+    margin-top: 50px;
+}
+
+footer {
+    background-color: darkred;
+    padding: 40px;
+    margin-top: 50px;
+}
+
+footer p, footer i {
+    color: white;
+}
+
+/*OTROS FICHEROS*/
+
+/*comenzar Subasta PHP*/
+
+/*Ver Peticiones PHP*/

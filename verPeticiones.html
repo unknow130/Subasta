@@ -1,0 +1,268 @@
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabla de Peticiones</title>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/miscript.js"></script>
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: 'verPeticionesAjax.php',
+                type: 'GET',
+                dataType: 'json',
+                data: { action: 'verPeticiones' },
+                success: function (response) {
+                    let array = response; // La respuesta contiene los datos devueltos por la función verPeticiones en Base.php
+                    // Puedes usar los datos recibidos aquí
+                    let contador = 1;
+                    let divOfPeticiones = $("<div id='divOfPeticiones'></div>");
+
+                    if (array.length === 0) {
+                        let h1 = $("<h1>No hay peticiones</h1>");
+                        divOfPeticiones.append(h1);
+                    } else {
+                        $.each(array, function (index, value) {
+                            let tablePeticiones = $("<table class='tablePeticiones'></table>");
+
+                            let trHeader = $("<tr></tr>");
+                            let thHeader = $("<th colspan='2'>TABLA DE PETICIONES EN ESTADO DE ESPERA</th>");
+                            trHeader.append(thHeader);
+                            tablePeticiones.append(trHeader);
+
+                            let trNumero = $("<tr></tr>");
+                            let tdNumero = $("<td class='peticion-numero' colspan='2'>PETICION NUMERO: " + contador + "</td>");
+                            trNumero.append(tdNumero);
+                            tablePeticiones.append(trNumero);
+                            let nombre_objeto = value.nombre_objeto
+                            let properties = [
+                                { label: 'id_peticion', value: value.id_peticion },
+                                { label: 'Nombre Objeto', value: value.nombre_objeto },
+                                { label: 'Descripcion', value: value.descripcion },
+                                { label: 'Historia', value: value.historia },
+                                { label: 'Nombre Usuario', value: value.nombre_usuario },
+                                { label: 'Categoria del Objeto', value: value.tipo_objeto },
+                                { label: 'Estado de la peticion', value: value.estado },
+                                { label: 'Precio inicial', value: value.precio_inicial },
+                            ];
+                            $.each(properties, function (index, property) {
+                                let trProperty = $("<tr></tr>");
+                                let tdLabel = $("<td>" + property.label + "</td>");
+                                let tdValue = $("<td>" + property.value + "</td>");
+                                trProperty.append(tdLabel);
+                                trProperty.append(tdValue);
+                                tablePeticiones.append(trProperty);
+                            });
+                            let tdImagen = $("<td></td>");
+                            let imagen = "";
+
+                            $.ajax({
+                                url: 'verificar_archivo.php',
+                                type: 'POST',
+                                data: { 'filename': nombre_objeto },
+                                dataType: 'json',
+                                success: function (response2) {
+                                    let imagen = "<img src='" + response2 + "'>"
+                                    tdImagen.html(imagen);
+                                },
+                                error: function (xhr, status, error) {
+                                    console.error('Error en la solicitud:', error);
+                                }
+                            });
+
+                            tdImagen.html(imagen);
+                            let trImagen = $("<tr></tr>");
+                            trImagen.append($("<td>Imagen: </td>"));
+                            trImagen.append(tdImagen);
+                            tablePeticiones.append(trImagen);
+
+                            let tdForm = $("<td colspan='1'></td>");
+                            let form = $("<form id='myForm' class='dynamic-form'></form>");
+                            let inputIdPeticion = $("<input type='hidden' name='idPeticion' value='" + value.id_peticion + "'>");
+                            let inputNombre = $("<input type='hidden' name='nombre' value='" + value.nombre_objeto + "'>");
+                            let inputDescripcion = $("<input type='hidden' name='descripcion' value='" + value.descripcion + "'>");
+                            let inputHistoria = $("<input type='hidden' name='historia' value='" + value.historia + "'>");
+                            let inputNombreUsuario = $("<input type='hidden' name='nombre_usuario' value='" + value.nombre_usuario + "'>");
+                            let inputTipoObjeto = $("<input type='hidden' name='tipo_objeto' value='" + value.tipo_objeto + "'>");
+                            let inputPrecioInicial = $("<input type='hidden' name='precio_inicial' value='" + value.precio_inicial + "'>");
+                            let inputAceptarPeticion = $("<button type='submit' name='aceptarPeticion'  class='accept-button me-2' data-action='aceptar'>Aceptar peticion de subasta</button>");
+
+                            form.append(inputIdPeticion);
+                            form.append(inputNombre);
+                            form.append(inputDescripcion);
+                            form.append(inputHistoria);
+                            form.append(inputNombreUsuario);
+                            form.append(inputTipoObjeto);
+                            form.append(inputPrecioInicial);
+                            form.append(inputAceptarPeticion);
+                            tdForm.append(form);
+
+                            //Aki va el otro
+                            let tdForm2 = $("<td colspan='1'></td>");
+                            let form2 = $("<form id='myForm' class='dynamic-form'></form>");
+                            let inputIdPeticion2 = $("<input type='hidden' name='idPeticion' value='" + value.id_peticion + "'>");
+                            let inputNombre2 = $("<input type='hidden' name='nombre' value='" + value.nombre_objeto + "'>");
+                            let inputDescripcion2 = $("<input type='hidden' name='descripcion' value='" + value.descripcion + "'>");
+                            let inputHistoria2 = $("<input type='hidden' name='historia' value='" + value.historia + "'>");
+                            let inputNombreUsuario2 = $("<input type='hidden' name='nombre_usuario' value='" + value.nombre_usuario + "'>");
+                            let inputTipoObjeto2 = $("<input type='hidden' name='tipo_objeto' value='" + value.tipo_objeto + "'>");
+                            let inputPrecioInicial2 = $("<input type='hidden' name='precio_inicial' value='" + value.precio_inicial + "'>");
+                            let inputDenegarPeticion2 = $("<button type='submit' name='denegarPeticion'  class='reject-button ms-2' data-action='rechazar'>Rechazar peticion de subasta</button>");
+
+                            form2.append(inputIdPeticion2);
+                            form2.append(inputNombre2);
+                            form2.append(inputDescripcion2);
+                            form2.append(inputHistoria2);
+                            form2.append(inputNombreUsuario2);
+                            form2.append(inputTipoObjeto2);
+                            form2.append(inputPrecioInicial2);
+                            form2.append(inputDenegarPeticion2);
+                            tdForm2.append(form2);
+
+
+                            let trForm = $("<tr></tr>");
+                            trForm.append(tdForm);
+                            trForm.append(tdForm2);
+                            tablePeticiones.append(trForm);
+
+                            divOfPeticiones.append(tablePeticiones);
+                            contador++;
+                        });
+                    }
+
+                    $("#divOfPeticiones").replaceWith(divOfPeticiones);
+
+                    $("form").submit(function (e) {
+                        e.preventDefault();
+                        let form = $(this);
+                        let formData = form.serialize();
+
+                        let buttonClicked = form.find(":submit[data-action]").attr("data-action");
+                        alert(buttonClicked)
+                        if (buttonClicked === "aceptar") {
+                            // Realizar llamada AJAX para aceptar la petición
+                            $.ajax({
+                                url: 'StartSubastaAjaxAccept.php',
+                                type: 'POST',
+                                data: formData,
+                                dataType: "JSON",
+                                success: function (response) {
+                                    alert("boton Aceptar ok");
+                                    alert(response);
+                                    // Procesar la respuesta del servidor después de aceptar la petición
+                                },
+                                error: function (xhr, status, error) {
+                                    // Manejar el error de la solicitud AJAX al aceptar la petición
+                                    alert("boton Aceptar error");
+                                }
+                            });
+                        } else if (buttonClicked === "rechazar") {
+                            // Realizar llamada AJAX para rechazar la petición
+                            $.ajax({
+                                url: 'StartSubastaAjaxDenegar.php',
+                                type: 'POST',
+                                data: formData,
+                                dataType: "JSON",
+                                success: function (response) {
+                                    // Procesar la respuesta del servidor después de rechazar la petición
+                                    alert("boton rechazar ok");
+                                    exit;
+                                },
+                                error: function (xhr, status, error) {
+                                    // Manejar el error de la solicitud AJAX al rechazar la petición
+                                    alert("boton rechazar error");
+                                }
+                            });
+                        }
+                    });
+
+                },
+                error: function (xhr, status, error) {
+                    // Manejar el error de la solicitud AJAX
+                }
+            });
+        });
+    </script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        #divOfPeticiones {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f2f2f2;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .tablePeticiones {
+            width: 100%;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+        }
+
+        .tablePeticiones th,
+        .tablePeticiones td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .tablePeticiones th {
+            background-color: #333;
+            color: #fff;
+        }
+
+        .tablePeticiones img {
+            max-width: 200px;
+        }
+
+        .peticion-numero {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .accept-button {
+            width: 50%;
+            height: 10%;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .accept-button:hover {
+            background-color: #45a049;
+        }
+
+        .reject-button {
+            width: 50%;
+            height: 10%;
+            background-color: #FF0000;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .reject-button:hover {
+            background-color: #CC0000;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="divOfPeticiones">
+
+    </div>
+</body>
+
+</html>

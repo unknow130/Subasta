@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Subastas Activas</title>
+    <!-- Agregar los enlaces a los archivos CSS de Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.7.0/dist/css/bootstrap.min.css">
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .auction {
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+
+        .auction-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .auction-description {
+            margin-bottom: 10px;
+        }
+
+        .auction-details {
+            font-size: 14px;
+        }
+
+        .auction-details span {
+            font-weight: bold;
+        }
+
+        .images {
+            width: 200px;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: 'verSubastasActivasAjax.php',
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    action: 'verSubastasActivas'
+                }
+            }).done(function (response) {
+                let subastas = response;
+                let container = $('.container');
+                let html = '';
+
+                if (subastas.length === 0) {
+                    html += '<h1>NO HAY SUBASTAS ACTIVAS</h1>';
+                    container.append(html)
+                } else {
+                    let promises = []; // Array para almacenar las promesas de las llamadas $.ajax
+                    $.each(subastas, function (index, subasta) {
+                        let ajaxPromise = $.ajax({
+                            url: 'verificar_archivo.php',
+                            type: 'POST',
+                            data: {
+                                'filename': subasta.titulo
+                            },
+                            dataType: 'json'
+                        }).done(function (response) {
+                            let fechaActual = new Date();
+
+                            // Obtener el año, mes y día de la fecha actual
+                            let anio = fechaActual.getFullYear();
+                            let mes = ('0' + (fechaActual.getMonth() + 1)).slice(-2); // El mes comienza desde 0, por eso se suma 1
+                            let dia = ('0' + fechaActual.getDate()).slice(-2);
+
+                            // Construir la fecha en formato "YYYY-MM-DD"
+                            let fechaFormateada = anio + '-' + mes + '-' + dia;
+                            alert(fechaFormateada + " " + subasta.fecha_fin)
+                            if (fechaFormateada >= subasta.fecha_fin) {
+                                let tituloDeLaSubastaParaFinalizar = subasta.titulo
+                                $.ajax({
+                                    url: 'cerrarSubastaAjax.php',
+                                    type: 'POST',
+                                    dataType: 'JSON',
+                                    data: { 'tituloSubasta': tituloDeLaSubastaParaFinalizar } ,
+                                    success: function (response) {
+                                        alert(response)
+                                    }
+                                });
+                            }
+                            let imagen = "<img class='images' src='" + response + "'>";
+                                    let contador = index + 1;
+                                    html += '<div class="auction">' +
+                                        '<h2 class="auction-title">Subasta ' + contador + '</h2>' +
+                                        '<p class="auction-description">Titulo: ' + subasta.titulo + '</p>' +
+                                        '<p class="auction-description">Descripción de la subasta 1: ' + subasta.descripcion + '</p>' +
+                                        '<p class="auction-details">Detalles: <span>Precio inicial: </span>' + subasta.precio_actual + '€, <span>Fecha de finalización: </span>' + subasta.fecha_fin + '</p>' +
+                                        '<p class="auction-description">Imagen del objeto a subastar:' + imagen + '</p>' +
+                                        '<form id="pujaForm_' + index + '">' +
+                                        '<div class="mb-3">' +
+                                        '<label for="nombreUsuarioPuja_' + index + '" class="form-label">Introduzca su nombre de usuario</label>' +
+                                        '<input type="text" class="form-control" id="nombreUsuarioPuja_' + index + '" name="nombreUsuarioPuja">' +
+                                        '</div>' +
+                                        '<div class="mb-3">' +
+                                        '<label for="montoPuja_' + index + '" class="form-label">Introduzca cantidad puja</label>' +
+                                        '<input type="number" class="form-control" id="montoPuja_' + index + '" name="montoPuja">' +
+                                        '</div>' +
+                                        '<input type="hidden" name="tituloSubasta" value="' + subasta.titulo + '">' +
+                                        '<button type="submit" name="startPuja" class="btn btn-primary">Realizar una puja</button>' +
+                                        '</form>' +
+                                        '</div>';
+                                });
+
+                                promises.push(ajaxPromise); // Agregar la promesa al array
+                            });
+
+                        // Cuando todas las promesas se resuelvan, generar el HTML completo
+                        $.when.apply($, promises).done(function () {
+                            container.html(html);
+
+                            // Escuchar el evento de envío del formulario de puja
+                            $('form').submit(function (event) {
+                                event.preventDefault(); // Prevenir el envío del formulario
+
+                                let index = $(this).attr('id').split('_')[1]; // Capturar el valor del índice utilizando una función de cierre (closure)
+                                let nombreUsuarioPuja = $('#nombreUsuarioPuja_' + index).val();
+                                let montoPuja = $('#montoPuja_' + index).val();
+                                alert(subastas[index].titulo + "" + nombreUsuarioPuja + "" + montoPuja)
+                                // Realizar la llamada Ajax para enviar los datos del formulario
+                                $.ajax({
+                                    url: 'realizarPujaAjax.php',
+                                    type: 'POST',
+                                    dataType: 'JSON',
+                                    data: {
+                                        "nombreUsuarioPuja": nombreUsuarioPuja,
+                                        "montoPuja": montoPuja,
+                                        "tituloSubasta": subastas[index].titulo
+                                    },
+                                    success: function (response) {
+                                        // Manejar la respuesta del servidor
+                                        alert(response)
+                                    },
+                                    error: function (xhr, status, error) {
+                                        console.error('Error en la solicitud:', error);
+                                    }
+                                });
+                            });
+                        });
+                    }
+            }).fail(function (error) {
+                        console.error(error);
+                    });
+        });
+
+
+    </script>
+</head>
+
+<body>
+    <header>
+        <h1>Subastas Activas</h1>
+    </header>
+    <div class="container"></div>
+</body>
+
+</html>
